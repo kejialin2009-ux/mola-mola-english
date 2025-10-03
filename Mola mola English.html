@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>螺旋式进阶课程体系</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -78,120 +78,111 @@
             border: 2px dashed #9B59B6;
             border-radius: 12px;
             margin-top: 2rem;
+            text-align: left;
         }
         .llm-output h3 {
             color: #9B59B6;
-            font-weight: bold;
+            font-weight: 900;
             font-size: 1.5rem;
             margin-bottom: 1rem;
+            text-align: center;
+        }
+        .llm-output h4 {
+            color: #333;
+            font-weight: 700;
+            font-size: 1.1rem;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
         }
     </style>
 </head>
 <body>
 
     <script>
-        const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent";
-        const API_KEY = ""; // Canvas will provide this key at runtime
-
         // Define the curriculum data
         const curriculum = [
             {
                 name: "启蒙级", color_class: "level-1", cefr: "Pre-A1",
                 focus: "兴趣建立, 听力词汇",
                 resources: "Yakka Dee / 低难度绘本",
-                y_offset: 0, scale: 1.0, x_shift: 0 
+                y_offset: 0, scale: 1.0, x_shift: 0,
+                report: `
+                    <h4>1. 核心要点总结：打下兴趣基础</h4>
+                    <p class="text-gray-700 leading-relaxed">
+                        您的孩子在这个级别的主要成就是<strong>建立对英语学习的浓厚兴趣</strong>，通过 Yakka Dee 的高频输入和绘本的视觉辅助，熟悉并能听懂约100个基础生存词汇。这一阶段重点是培养<strong>语感</strong>和<strong>听音辨义能力</strong>，为后续的正式学习做好心理准备，避免学习焦虑。
+                    </p>
+                    <h4>2. 下一步学习建议：准备进阶 A1</h4>
+                    <ul class="ml-4 list-disc space-y-2 text-gray-700">
+                        <li class="ml-4 list-disc text-gray-700"><strong>家庭配合建议：</strong> 鼓励孩子每天观看 5-10 分钟的英文儿歌或低难度动画，保持语言的“新鲜感”。</li>
+                        <li class="ml-4 list-disc text-gray-700"><strong>进阶重点：</strong> 孩子已具备基础听力，下一步需要开始学习<strong>字母和音素</strong>的对应关系，为进入<strong>入门级</strong>的自然拼读学习做准备。</li>
+                        <li class="ml-4 list-disc text-gray-700"><strong>能力目标：</strong> 能够听懂老师的简单指令（例如：stand up, touch your nose）。</li>
+                    </ul>
+                `
             },
             {
                 name: "入门级", color_class: "level-2", cefr: "A1",
                 focus: "系统拼读, 基础对话",
                 resources: "Alphabet Block / Power Up L1-L2",
-                y_offset: 150, scale: 0.9, x_shift: 150 
+                y_offset: 150, scale: 0.9, x_shift: 150,
+                report: `
+                    <h4>1. 核心要点总结：掌握拼读工具</h4>
+                    <p class="text-gray-700 leading-relaxed">
+                        孩子已经成功过渡到 <strong>A1 级别</strong>，主要成就包括：系统掌握了 <strong>Alphabet Block</strong> 的自然拼读规则，具备<strong>“见词能读，听音能写”</strong>的基础能力。同时，能运用 <strong>Power Up L1-L2</strong> 的主题词汇和基础语法，完成<strong>简单的日常对话和情景问答</strong>。
+                    </p>
+                    <h4>2. 下一步学习建议：转向阅读流利度</h4>
+                    <ul class="ml-4 list-disc space-y-2 text-gray-700">
+                        <li class="ml-4 list-disc text-gray-700"><strong>家庭配合建议：</strong> 鼓励孩子尝试独立朗读简单的分级读物，将拼读知识应用到实际文本中，重点训练<strong>阅读流利度</strong>。</li>
+                        <li class="ml-4 list-disc text-gray-700"><strong>进阶重点：</strong> 下一阶段将侧重<strong>阅读策略</strong>和<strong>口语的连贯性</strong>，需要增加句子结构的复杂度和长度。</li>
+                        <li class="ml-4 list-disc text-gray-700"><strong>能力目标：</strong> 能够流利朗读低阶文本，并围绕常见话题进行 3-5 句的<strong>连贯表达</strong>。</li>
+                    </ul>
+                `
             },
             {
                 name: "初级", color_class: "level-3", cefr: "A2",
                 focus: "阅读策略, 口语连贯",
                 resources: "分级阅读 / Power Up L3-L4",
-                y_offset: 300, scale: 0.8, x_shift: -150 
+                y_offset: 300, scale: 0.8, x_shift: -150,
+                report: `
+                    <h4>1. 核心要点总结：独立阅读者和沟通者</h4>
+                    <p class="text-gray-700 leading-relaxed">
+                        恭喜！孩子已达到 <strong>A2 级别</strong>，这是一个质的飞跃。在本级别中，孩子学会了<strong>策略性阅读</strong>，能够理解不同体裁的简单文章，并运用 <strong>Power Up L3-L4</strong> 的语法框架，实现<strong>口语的连贯性</strong>，能够主动发起和维持关于日常生活和个人经历的对话。
+                    </p>
+                    <h4>2. 下一步学习建议：培养思辨能力</h4>
+                    <ul class="ml-4 list-disc space-y-2 text-gray-700">
+                        <li class="ml-4 list-disc text-gray-700"><strong>家庭配合建议：</strong> 引导孩子用英文复述看过的故事或简要总结新闻，训练其<strong>逻辑组织能力</strong>。</li>
+                        <li class="ml-4 list-disc text-gray-700"><strong>进阶重点：</strong> 中级阶段将挑战 <strong>B1 级别</strong>，需要学习更复杂的语法结构和抽象词汇，重点培养<strong>思辨能力</strong>和观点表达。</li>
+                        <li class="ml-4 list-disc text-gray-700"><strong>能力目标：</strong> 能够针对某个话题表达自己的<strong>观点和理由</strong>。</li>
+                    </ul>
+                `
             },
             {
                 name: "中级", color_class: "level-4", cefr: "B1+",
                 focus: "高阶词汇, 思辨表达",
                 resources: "Power Up L5-L6+ / 深度材料",
-                y_offset: 450, scale: 0.7, x_shift: 0 
+                y_offset: 450, scale: 0.7, x_shift: 0,
+                report: `
+                    <h4>1. 核心要点总结：掌握流利应用能力</h4>
+                    <p class="text-gray-700 leading-relaxed">
+                        孩子已迈入 <strong>B1+ 级别</strong>，接近流利。主要成就包括：掌握了大量<strong>高阶词汇</strong>和复杂句式，能处理 <strong>Power Up L5-L6+</strong> 的深度主题，并能用英文<strong>进行思辨和观点阐述</strong>。英语已成为他们获取信息、表达自我、解决问题的<strong>实用工具</strong>。
+                    </p>
+                    <h4>2. 下一步学习建议：保持应用和专业化</h4>
+                    <ul class="ml-4 list-disc space-y-2 text-gray-700">
+                        <li class="ml-4 list-disc text-gray-700"><strong>家庭配合建议：</strong> 鼓励孩子使用英文阅读原版章节书或参加英文讨论组/辩论活动，将语言技能用于真实生活场景。</li>
+                        <li class="ml-4 list-disc text-gray-700"><strong>进阶重点：</strong> 挑战 <strong>B2 甚至 C1 级别</strong>，向**学术或商务应用**领域发展，例如考虑 IETLS 或 TOEFL 等标准化考试。</li>
+                        <li class="ml-4 list-disc text-gray-700"><strong>能力目标：</strong> 能够流利参与专业讨论，理解复杂长篇文本的核心思想。</li>
+                    </ul>
+                `
             }
         ];
 
-        async function fetchGeminiResponse(payload) {
-            let attempt = 0;
-            const maxRetries = 3;
-            const baseDelay = 1000;
-
-            while (attempt < maxRetries) {
-                try {
-                    const response = await fetch(`${API_URL}?key=${API_KEY}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if (!response.ok) {
-                        if (response.status === 429 && attempt < maxRetries - 1) {
-                            throw new Error('Rate limit exceeded, retrying...');
-                        }
-                        const errorData = await response.json();
-                        throw new Error(`API request failed: ${response.status} - ${errorData.error.message}`);
-                    }
-
-                    const result = await response.json();
-                    const text = result.candidates?.[0]?.content?.parts?.[0]?.text || "抱歉，AI未能生成内容。";
-                    return text;
-
-                } catch (error) {
-                    if (error.message.includes('Rate limit exceeded')) {
-                        const delay = baseDelay * Math.pow(2, attempt) + Math.random() * 1000;
-                        await new Promise(resolve => setTimeout(resolve, delay));
-                        attempt++;
-                    } else {
-                        console.error("Gemini API Error:", error);
-                        return "抱歉，服务出现错误，请稍后重试。";
-                    }
-                }
-            }
-            return "抱歉，由于网络或限制，AI无法完成请求。";
-        }
-
-        async function analyzeLevel(level) {
+        function analyzeLevel(level) {
             const outputDiv = document.getElementById('llm-output');
-            outputDiv.innerHTML = `<h3 class="text-center text-gray-500">✨ 正在为您生成【${level.name}】的学习报告...</h3>`;
             
-            const systemPrompt = "你是一位资深少儿英语教育专家。请根据提供的级别信息，生成一段适合家长的分析报告。报告内容必须包含两个部分：1. **核心要点总结**（用两三句话概括这个级别的核心成就，使用粗体关键词）。2. **下一步学习建议**（给出接下来的进阶方向或家庭配合建议，使用列表格式）。请使用友善、专业的中文语气。";
-            
-            const userQuery = `请分析以下级别：\n级别名称: ${level.name}\nCEFR对标: ${level.cefr}\n核心目标: ${level.focus}\n核心资源: ${level.resources}`;
-
-            const payload = {
-                contents: [{ parts: [{ text: userQuery }] }],
-                systemInstruction: { parts: [{ text: systemPrompt }] },
-            };
-
-            try {
-                const responseText = await fetchGeminiResponse(payload);
-                
-                // Format the output to be visually appealing (using markdown)
-                const formattedText = responseText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-                const htmlContent = `
-                    <h3>✨ 【${level.name}】深度学习报告 (CEFR: ${level.cefr})</h3>
-                    ${formattedText.split('\n').map(line => {
-                        if (line.startsWith('1.')) return `<h4>${line}</h4>`;
-                        if (line.startsWith('2.')) return `<h4>${line}</h4>`;
-                        if (line.startsWith('*')) return `<li class="ml-4 list-disc text-gray-700">${line.substring(1).trim()}</li>`;
-                        return `<p class="text-gray-700 leading-relaxed">${line}</p>`;
-                    }).join('')}
-                `;
-                outputDiv.innerHTML = htmlContent;
-
-            } catch (error) {
-                outputDiv.innerHTML = `<h3 class="text-center text-red-500">❌ 报告生成失败：${error.message}</h3>`;
-            }
+            const htmlContent = `
+                <h3>✨ 【${level.name}】深度学习报告 (CEFR: ${level.cefr})</h3>
+                ${level.report}
+            `;
+            outputDiv.innerHTML = htmlContent;
         }
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -265,7 +256,7 @@
 
         <!-- Gemini LLM Output Section -->
         <div id="llm-output" class="llm-output mt-12 bg-gray-50">
-            <h3 class="text-center text-gray-500">点击上方的任一级别 (例如：启蒙级)，获取 Gemini AI 驱动的深度分析和进阶建议。</h3>
+            <h3 class="text-center text-gray-500">点击上方的任一级别 (例如：启蒙级)，获取该级别专业的深度分析和进阶建议。</h3>
         </div>
         <!-- End LLM Output Section -->
 
@@ -281,3 +272,4 @@
 
 </body>
 </html>
+
