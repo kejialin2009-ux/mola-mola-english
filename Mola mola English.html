@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>螺旋式进阶课程体系</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f7f9fb;
+        }
+        .spiral-container {
+            position: relative;
+            width: 100%;
+            height: 800px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end; /* Start from the bottom */
+            padding-bottom: 50px;
+            overflow: hidden;
+        }
+        .level-ring {
+            position: absolute;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease-in-out;
+            border: 3px solid rgba(255, 255, 255, 0.8);
+            text-align: center;
+            font-weight: 600;
+            cursor: pointer; /* Make rings clickable */
+        }
+        .level-ring:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* Macaron Colors and Depth (Z-index based on level) */
+        .level-4 { background-color: #FFFEE6; color: #5B4B00; z-index: 40; } /* Soft Yellow - Top */
+        .level-3 { background-color: #E6F0FF; color: #003673; z-index: 30; } /* Baby Blue */
+        .level-2 { background-color: #EAFEEA; color: #1D581D; z-index: 20; } /* Mint Green */
+        .level-1 { background-color: #FDE4E4; color: #730000; z-index: 10; } /* Soft Pink - Bottom */
+        
+        .arrow {
+            position: absolute;
+            font-size: 30px;
+            font-weight: bold;
+            color: #555;
+            transition: all 0.5s ease;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .spiral-container {
+                height: 600px;
+                padding-bottom: 20px;
+            }
+            .level-ring {
+                width: 200px !important;
+                height: 200px !important;
+                font-size: 0.75rem !important;
+                padding: 5px;
+            }
+            .level-ring .text-xl { font-size: 1rem; }
+            .level-ring .text-sm { font-size: 0.6rem; }
+            .arrow { font-size: 20px; }
+        }
+
+        /* LLM Output Styles */
+        .llm-output {
+            min-height: 150px;
+            padding: 1.5rem;
+            background-color: #fff;
+            border: 2px dashed #9B59B6;
+            border-radius: 12px;
+            margin-top: 2rem;
+        }
+        .llm-output h3 {
+            color: #9B59B6;
+            font-weight: bold;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+    <script>
+        const API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent";
+        const API_KEY = ""; // Canvas will provide this key at runtime
+
+        // Define the curriculum data
+        const curriculum = [
+            {
+                name: "启蒙级", color_class: "level-1", cefr: "Pre-A1",
+                focus: "兴趣建立, 听力词汇",
+                resources: "Yakka Dee / 低难度绘本",
+                y_offset: 0, scale: 1.0, x_shift: 0 
+            },
+            {
+                name: "入门级", color_class: "level-2", cefr: "A1",
+                focus: "系统拼读, 基础对话",
+                resources: "Alphabet Block / Power Up L1-L2",
+                y_offset: 150, scale: 0.9, x_shift: 150 
+            },
+            {
+                name: "初级", color_class: "level-3", cefr: "A2",
+                focus: "阅读策略, 口语连贯",
+                resources: "分级阅读 / Power Up L3-L4",
+                y_offset: 300, scale: 0.8, x_shift: -150 
+            },
+            {
+                name: "中级", color_class: "level-4", cefr: "B1+",
+                focus: "高阶词汇, 思辨表达",
+                resources: "Power Up L5-L6+ / 深度材料",
+                y_offset: 450, scale: 0.7, x_shift: 0 
+            }
+        ];
+
+        async function fetchGeminiResponse(payload) {
+            let attempt = 0;
+            const maxRetries = 3;
+            const baseDelay = 1000;
+
+            while (attempt < maxRetries) {
+                try {
+                    const response = await fetch(`${API_URL}?key=${API_KEY}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        if (response.status === 429 && attempt < maxRetries - 1) {
+                            throw new Error('Rate limit exceeded, retrying...');
+                        }
+                        const errorData = await response.json();
+                        throw new Error(`API request failed: ${response.status} - ${errorData.error.message}`);
+                    }
+
+                    const result = await response.json();
+                    const text = result.candidates?.[0]?.content?.parts?.[0]?.text || "抱歉，AI未能生成内容。";
+                    return text;
+
+                } catch (error) {
+                    if (error.message.includes('Rate limit exceeded')) {
+                        const delay = baseDelay * Math.pow(2, attempt) + Math.random() * 1000;
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        attempt++;
+                    } else {
+                        console.error("Gemini API Error:", error);
+                        return "抱歉，服务出现错误，请稍后重试。";
+                    }
+                }
+            }
+            return "抱歉，由于网络或限制，AI无法完成请求。";
+        }
+
+        async function analyzeLevel(level) {
+            const outputDiv = document.getElementById('llm-output');
+            outputDiv.innerHTML = `<h3 class="text-center text-gray-500">✨ 正在为您生成【${level.name}】的学习报告...</h3>`;
+            
+            const systemPrompt = "你是一位资深少儿英语教育专家。请根据提供的级别信息，生成一段适合家长的分析报告。报告内容必须包含两个部分：1. **核心要点总结**（用两三句话概括这个级别的核心成就，使用粗体关键词）。2. **下一步学习建议**（给出接下来的进阶方向或家庭配合建议，使用列表格式）。请使用友善、专业的中文语气。";
+            
+            const userQuery = `请分析以下级别：\n级别名称: ${level.name}\nCEFR对标: ${level.cefr}\n核心目标: ${level.focus}\n核心资源: ${level.resources}`;
+
+            const payload = {
+                contents: [{ parts: [{ text: userQuery }] }],
+                systemInstruction: { parts: [{ text: systemPrompt }] },
+            };
+
+            try {
+                const responseText = await fetchGeminiResponse(payload);
+                
+                // Format the output to be visually appealing (using markdown)
+                const formattedText = responseText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                const htmlContent = `
+                    <h3>✨ 【${level.name}】深度学习报告 (CEFR: ${level.cefr})</h3>
+                    ${formattedText.split('\n').map(line => {
+                        if (line.startsWith('1.')) return `<h4>${line}</h4>`;
+                        if (line.startsWith('2.')) return `<h4>${line}</h4>`;
+                        if (line.startsWith('*')) return `<li class="ml-4 list-disc text-gray-700">${line.substring(1).trim()}</li>`;
+                        return `<p class="text-gray-700 leading-relaxed">${line}</p>`;
+                    }).join('')}
+                `;
+                outputDiv.innerHTML = htmlContent;
+
+            } catch (error) {
+                outputDiv.innerHTML = `<h3 class="text-center text-red-500">❌ 报告生成失败：${error.message}</h3>`;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.getElementById('spiral-container');
+
+            curriculum.forEach((level, index) => {
+                // Create the ring element
+                const ring = document.createElement('div');
+                ring.className = `level-ring ${level.color_class} p-4 rounded-full shadow-lg`;
+                ring.id = `level-${index + 1}`;
+                ring.style.width = `${300 * level.scale}px`;
+                ring.style.height = `${300 * level.scale}px`;
+                ring.style.bottom = `${level.y_offset}px`;
+                ring.style.transform = `translateX(${level.x_shift}px)`;
+                ring.onclick = () => analyzeLevel(level);
+                
+                // Content HTML
+                ring.innerHTML = `
+                    <div class="flex flex-col items-center justify-center space-y-1">
+                        <span class="text-xl font-extrabold">${level.name}</span>
+                        <span class="text-sm italic opacity-75">${level.cefr}</span>
+                        <hr class="w-1/2 border-t-2 border-current opacity-30">
+                        <p class="text-sm font-semibold mt-1">${level.focus}</p>
+                        <p class="text-xs opacity-80 mt-1">资源: ${level.resources}</p>
+                        <button class="mt-2 px-3 py-1 bg-white text-[#9B59B6] border border-[#9B59B6] rounded-full hover:bg-gray-100 text-xs font-bold transition">
+                           ✨ 获取深度分析
+                        </button>
+                    </div>
+                `;
+                container.appendChild(ring);
+                
+                // Add the arrow for progression (only between levels)
+                if (index < curriculum.length - 1) {
+                    const nextLevel = curriculum[index + 1];
+                    const arrow = document.createElement('div');
+                    arrow.className = 'arrow';
+                    arrow.innerHTML = '▲'; 
+                    arrow.style.bottom = `${level.y_offset + (nextLevel.y_offset - level.y_offset) / 2}px`;
+                    
+                    const mid_x_shift = (level.x_shift + nextLevel.x_shift) / 2;
+                    arrow.style.transform = `translateX(${mid_x_shift}px) rotate(${index % 2 === 0 ? '-30deg' : '30deg'})`;
+
+                    container.appendChild(arrow);
+                }
+            });
+
+            // Make it slightly responsive on load (adjusting the center offset for better mobile view)
+            const rings = document.querySelectorAll('.level-ring');
+            if (window.innerWidth <= 768) {
+                 rings.forEach(ring => {
+                    const style = window.getComputedStyle(ring);
+                    const currentX = style.transform.match(/translateX\(([^)]+)\)/);
+                    if (currentX) {
+                        const newX = parseFloat(currentX[1]) / 2; 
+                        ring.style.transform = `translateX(${newX}px)`;
+                    }
+                 });
+            }
+        });
+    </script>
+
+    <div class="max-w-4xl mx-auto p-6 bg-white shadow-xl rounded-xl mt-8">
+        <div class="text-center mb-6">
+            <h1 class="text-4xl font-extrabold text-[#9B59B6]">螺旋式进阶体系：从兴趣到流利表达</h1>
+            <p class="text-lg text-gray-500 mt-2">（知识点随着级别上升，广度和深度不断螺旋式拓展）</p>
+        </div>
+
+        <div id="spiral-container" class="spiral-container">
+            <!-- Dynamic Level Rings will be inserted here by JavaScript -->
+        </div>
+
+        <!-- Gemini LLM Output Section -->
+        <div id="llm-output" class="llm-output mt-12 bg-gray-50">
+            <h3 class="text-center text-gray-500">点击上方的任一级别 (例如：启蒙级)，获取 Gemini AI 驱动的深度分析和进阶建议。</h3>
+        </div>
+        <!-- End LLM Output Section -->
+
+        <div class="mt-8 pt-4 border-t-2 border-gray-100">
+            <h2 class="text-2xl font-bold text-[#333333] mb-3">体系核心理念：</h2>
+            <ul class="list-disc list-inside space-y-2 text-gray-700 ml-4">
+                <li>**高频复现 (Frequency):** 重要的词汇和语法点在不同级别中反复出现，但每次都增加难度和应用场景。</li>
+                <li>**广度拓展 (Breadth):** 启蒙阶段侧重**发音与听力**，中级阶段拓展至**思辨与文化**。</li>
+                <li>**难度递增 (Depth):** 从**理解**简单绘本，到**策略性阅读**复杂章节书，能力螺旋式上升。</li>
+            </ul>
+        </div>
+    </div>
+
+</body>
+</html>
