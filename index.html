@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>螺旋式进阶课程体系</title>
+    <title>Mola Mola English：螺旋式进阶课程体系</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -11,6 +11,7 @@
             font-family: 'Inter', sans-serif;
             background-color: #f7f9fb;
         }
+        /* 螺旋图容器 - 增加顶部边距以适应新的 Hero Section */
         .spiral-container {
             position: relative;
             width: 100%;
@@ -20,7 +21,9 @@
             align-items: flex-end; /* Start from the bottom */
             padding-bottom: 50px;
             overflow: hidden;
+            margin-top: 2rem; /* Added margin for separation */
         }
+        /* 级别圆环样式 */
         .level-ring {
             position: absolute;
             display: flex;
@@ -32,7 +35,7 @@
             border: 3px solid rgba(255, 255, 255, 0.8);
             text-align: center;
             font-weight: 600;
-            cursor: pointer; /* Make rings clickable */
+            cursor: pointer;
         }
         .level-ring:hover {
             transform: scale(1.05);
@@ -94,12 +97,64 @@
             margin-top: 1rem;
             margin-bottom: 0.5rem;
         }
+        /* Modal Backdrop */
+        .modal-backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 50;
+            display: none;
+            justify-content: center;
+            align-items: center;
+        }
     </style>
 </head>
 <body>
 
     <script>
-        // Define the curriculum data
+        // Mola Mola 图像的 Base64 编码 (用于嵌入图标 - FIX: Moved outside DOMContentLoaded)
+        const MOLA_MOLA_LOGO_BASE64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAACXBIWXMAAAsTAAALEwEAmpwYAAABJklEQVR4nO2aOwrCMBRGvQeB56J34c/cIHoX7+G/eAJe6e8vHESuI7bZp/6QhJ97S0iRSCQSiXQY2QJcgRvgBfgV98/gq7A3hW+438BvYkY8C27AV+MvB2U5R148s8D3Yk75c+41o14gUoF9g43I2L2GfX/H2b7oE7kDXN8A6n0x2/rM30Y7hK8jXk74eH0B9V8g70h6E/1FwBvT1cDXk/Yh23+y4A+QkI/4y1h6y9V/E/oKqH4D2G/Y09hH9hWw4hJ+k/4+bB069v79hJb2WbX32s9y/C3f+Wj6T/Vv/3T/eC1B0N+WzD32mK233c+b13hJc2eN7hJ/e9m+rD/Y9oN6F0G82wB0d2/bO2L1vF8hS/p868u8JriA6k9QJqR3k+oM8N8hH178g0gkEolEuo4/0w+M5L6wHqK5fN0AAAAASUVORK5CYII=';
+        const WECHAT_ID = 'molamola107';
+
+        // --- New Functions for Interactivity ---
+        
+        // Function 1: Copy WeChat ID
+        function copyWeChatID() {
+            // Use a temporary textarea to hold the text for copying
+            const tempInput = document.createElement('input');
+            tempInput.value = WECHAT_ID;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+
+            // Display success message (Custom alert box equivalent)
+            const messageBox = document.getElementById('message-box');
+            const messageText = document.getElementById('message-text');
+            
+            messageText.innerHTML = `<span class="font-bold text-[#9B59B6]">微信号已复制: ${WECHAT_ID}</span><br>请打开微信，粘贴并添加好友，获取免费试听！`;
+            messageBox.style.display = 'flex';
+            
+            // Hide message after a few seconds
+            setTimeout(() => {
+                messageBox.style.display = 'none';
+            }, 5000);
+        }
+
+        // Function 2: Open Teacher Modal
+        function openTeacherModal() {
+            document.getElementById('teacher-modal').style.display = 'flex';
+        }
+
+        // Function 3: Close Teacher Modal
+        function closeTeacherModal() {
+            document.getElementById('teacher-modal').style.display = 'none';
+        }
+
+        // --- Curriculum Data ---
         const curriculum = [
             {
                 name: "启蒙级", color_class: "level-1", cefr: "Pre-A1",
@@ -109,13 +164,13 @@
                 report: `
                     <h4>1. 核心要点总结：打下兴趣基础</h4>
                     <p class="text-gray-700 leading-relaxed">
-                        您的孩子在这个级别的主要成就是<strong>建立对英语学习的浓厚兴趣</strong>，通过 Yakka Dee 的高频输入和绘本的视觉辅助，熟悉并能听懂约100个基础生存词汇。这一阶段重点是培养<strong>语感</strong>和<strong>听音辨义能力</strong>，为后续的正式学习做好心理准备，避免学习焦虑。
+                        您的孩子在这个级别的主要成就是建立对英语学习的浓厚兴趣，通过 Yakka Dee 的高频输入和绘本的视觉辅助，熟悉并能听懂约100个基础生存词汇。这一阶段重点是培养语感和听音辨义能力，为后续的正式学习做好心理准备，避免学习焦虑。
                     </p>
                     <h4>2. 下一步学习建议：准备进阶 A1</h4>
                     <ul class="ml-4 list-disc space-y-2 text-gray-700">
-                        <li class="ml-4 list-disc text-gray-700"><strong>家庭配合建议：</strong> 鼓励孩子每天观看 5-10 分钟的英文儿歌或低难度动画，保持语言的“新鲜感”。</li>
-                        <li class="ml-4 list-disc text-gray-700"><strong>进阶重点：</strong> 孩子已具备基础听力，下一步需要开始学习<strong>字母和音素</strong>的对应关系，为进入<strong>入门级</strong>的自然拼读学习做准备。</li>
-                        <li class="ml-4 list-disc text-gray-700"><strong>能力目标：</strong> 能够听懂老师的简单指令（例如：stand up, touch your nose）。</li>
+                        <li class="ml-4 list-disc text-gray-700">家庭配合建议：鼓励孩子每天观看 5-10 分钟的英文儿歌或低难度动画，保持语言的“新鲜感”。</li>
+                        <li class="ml-4 list-disc text-gray-700">进阶重点：孩子已具备基础听力，下一步需要开始学习字母和音素的对应关系，为进入入门级的自然拼读学习做准备。</li>
+                        <li class="ml-4 list-disc text-gray-700">能力目标：能够听懂老师的简单指令（例如：stand up, touch your nose）。</li>
                     </ul>
                 `
             },
@@ -127,13 +182,13 @@
                 report: `
                     <h4>1. 核心要点总结：掌握拼读工具</h4>
                     <p class="text-gray-700 leading-relaxed">
-                        孩子已经成功过渡到 <strong>A1 级别</strong>，主要成就包括：系统掌握了 <strong>Alphabet Block</strong> 的自然拼读规则，具备<strong>“见词能读，听音能写”</strong>的基础能力。同时，能运用 <strong>Power Up L1-L2</strong> 的主题词汇和基础语法，完成<strong>简单的日常对话和情景问答</strong>。
+                        孩子已经成功过渡到 A1 级别，主要成就包括：系统掌握了 Alphabet Block 的自然拼读规则，具备“见词能读，听音能写”的基础能力。同时，能运用 Power Up L1-L2 的主题词汇和基础语法，完成简单的日常对话和情景问答。
                     </p>
                     <h4>2. 下一步学习建议：转向阅读流利度</h4>
                     <ul class="ml-4 list-disc space-y-2 text-gray-700">
-                        <li class="ml-4 list-disc text-gray-700"><strong>家庭配合建议：</strong> 鼓励孩子尝试独立朗读简单的分级读物，将拼读知识应用到实际文本中，重点训练<strong>阅读流利度</strong>。</li>
-                        <li class="ml-4 list-disc text-gray-700"><strong>进阶重点：</strong> 下一阶段将侧重<strong>阅读策略</strong>和<strong>口语的连贯性</strong>，需要增加句子结构的复杂度和长度。</li>
-                        <li class="ml-4 list-disc text-gray-700"><strong>能力目标：</strong> 能够流利朗读低阶文本，并围绕常见话题进行 3-5 句的<strong>连贯表达</strong>。</li>
+                        <li class="ml-4 list-disc text-gray-700">家庭配合建议：鼓励孩子尝试独立朗读简单的分级读物，将拼读知识应用到实际文本中，重点训练阅读流利度。</li>
+                        <li class="ml-4 list-disc text-gray-700">进阶重点：下一阶段将侧重阅读策略和口语的连贯性，需要增加句子结构的复杂度和长度。</li>
+                        <li class="ml-4 list-disc text-gray-700">能力目标：能够流利朗读低阶文本，并围绕常见话题进行 3-5 句的连贯表达。</li>
                     </ul>
                 `
             },
@@ -145,13 +200,13 @@
                 report: `
                     <h4>1. 核心要点总结：独立阅读者和沟通者</h4>
                     <p class="text-gray-700 leading-relaxed">
-                        恭喜！孩子已达到 <strong>A2 级别</strong>，这是一个质的飞跃。在本级别中，孩子学会了<strong>策略性阅读</strong>，能够理解不同体裁的简单文章，并运用 <strong>Power Up L3-L4</strong> 的语法框架，实现<strong>口语的连贯性</strong>，能够主动发起和维持关于日常生活和个人经历的对话。
+                        恭喜！孩子已达到 A2 级别，这是一个质的飞跃。在本级别中，孩子学会了策略性阅读，能够理解不同体裁的简单文章，并运用 Power Up L1-L4 的语法框架，实现口语的连贯性，能够主动发起和维持关于日常生活和个人经历的对话。
                     </p>
                     <h4>2. 下一步学习建议：培养思辨能力</h4>
                     <ul class="ml-4 list-disc space-y-2 text-gray-700">
-                        <li class="ml-4 list-disc text-gray-700"><strong>家庭配合建议：</strong> 引导孩子用英文复述看过的故事或简要总结新闻，训练其<strong>逻辑组织能力</strong>。</li>
-                        <li class="ml-4 list-disc text-gray-700"><strong>进阶重点：</strong> 中级阶段将挑战 <strong>B1 级别</strong>，需要学习更复杂的语法结构和抽象词汇，重点培养<strong>思辨能力</strong>和观点表达。</li>
-                        <li class="ml-4 list-disc text-gray-700"><strong>能力目标：</strong> 能够针对某个话题表达自己的<strong>观点和理由</strong>。</li>
+                        <li class="ml-4 list-disc text-gray-700">家庭配合建议：引导孩子用英文复述看过的故事或简要总结新闻，训练其逻辑组织能力。</li>
+                        <li class="ml-4 list-disc text-gray-700">进阶重点：中级阶段将挑战 B1 级别，需要学习更复杂的语法结构和抽象词汇，重点培养思辨能力和观点表达。</li>
+                        <li class="ml-4 list-disc text-gray-700">能力目标：能够针对某个话题表达自己的观点和理由。</li>
                     </ul>
                 `
             },
@@ -163,13 +218,13 @@
                 report: `
                     <h4>1. 核心要点总结：掌握流利应用能力</h4>
                     <p class="text-gray-700 leading-relaxed">
-                        孩子已迈入 <strong>B1+ 级别</strong>，接近流利。主要成就包括：掌握了大量<strong>高阶词汇</strong>和复杂句式，能处理 <strong>Power Up L5-L6+</strong> 的深度主题，并能用英文<strong>进行思辨和观点阐述</strong>。英语已成为他们获取信息、表达自我、解决问题的<strong>实用工具</strong>。
+                        孩子已迈入 B1+ 级别，接近流利。主要成就包括：掌握了大量高阶词汇和复杂句式，能处理 Power Up L5-L6+ 的深度主题，并能用英文进行思辨和观点阐述。英语已成为他们获取信息、表达自我、解决问题的实用工具。
                     </p>
                     <h4>2. 下一步学习建议：保持应用和专业化</h4>
                     <ul class="ml-4 list-disc space-y-2 text-gray-700">
-                        <li class="ml-4 list-disc text-gray-700"><strong>家庭配合建议：</strong> 鼓励孩子使用英文阅读原版章节书或参加英文讨论组/辩论活动，将语言技能用于真实生活场景。</li>
-                        <li class="ml-4 list-disc text-gray-700"><strong>进阶重点：</strong> 挑战 <strong>B2 甚至 C1 级别</strong>，向**学术或商务应用**领域发展，例如考虑 IETLS 或 TOEFL 等标准化考试。</li>
-                        <li class="ml-4 list-disc text-gray-700"><strong>能力目标：</strong> 能够流利参与专业讨论，理解复杂长篇文本的核心思想。</li>
+                        <li class="ml-4 list-disc text-gray-700">家庭配合建议：鼓励孩子使用英文阅读原版章节书或参加英文讨论组/辩论活动，将语言技能用于真实生活场景。</li>
+                        <li class="ml-4 list-disc text-gray-700">进阶重点：挑战 B2 甚至 C1 级别，向学术或商务应用领域发展，例如考虑 IETLS 或 TOEFL 等标准化考试。</li>
+                        <li class="ml-4 list-disc text-gray-700">能力目标：能够流利参与专业讨论，理解复杂长篇文本的核心思想。</li>
                     </ul>
                 `
             }
@@ -187,6 +242,13 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             const container = document.getElementById('spiral-container');
+
+            // --- FIX: Set the Mola Mola Logo source dynamically ---
+            const logoImg = document.getElementById('mola-mola-logo');
+            if (logoImg) {
+                logoImg.src = MOLA_MOLA_LOGO_BASE64;
+            }
+            // ---------------------------------------------------
 
             curriculum.forEach((level, index) => {
                 // Create the ring element
@@ -243,10 +305,43 @@
             }
         });
     </script>
+    
+    <!-- Header / Navigation Bar -->
+    <header class="bg-white shadow-md">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <!-- Logo and Title -->
+                <div class="flex items-center space-x-3">
+                    <!-- Mola Mola Icon -->
+                    <img id="mola-mola-logo" src="" 
+                         alt="Mola Mola Logo" class="h-8 w-8 rounded-full">
+                    <span class="text-2xl font-extrabold text-[#9B59B6]">Mola Mola English</span>
+                </div>
+                <!-- Navigation Links -->
+                <nav class="space-x-4">
+                    <a href="#" class="text-gray-600 hover:text-[#9B59B6] font-medium">课程体系</a>
+                    <a href="#" class="text-gray-600 hover:text-[#9B59B6] font-medium" onclick="openTeacherModal(); return false;">师资力量</a>
+                    <!-- Changed href to onclick and added return false to prevent page jump -->
+                    <a href="#" class="text-white bg-[#9B59B6] px-4 py-2 rounded-full font-bold hover:bg-[#7a4690] transition" onclick="copyWeChatID(); return false;">免费试听</a>
+                </nav>
+            </div>
+        </div>
+    </header>
 
     <div class="max-w-4xl mx-auto p-6 bg-white shadow-xl rounded-xl mt-8">
-        <div class="text-center mb-6">
-            <h1 class="text-4xl font-extrabold text-[#9B59B6]">螺旋式进阶体系：从兴趣到流利表达</h1>
+        
+        <!-- Hero Section: 核心介绍区 -->
+        <div class="text-center py-8 px-4 bg-[#E6F0FF] rounded-lg border-2 border-[#003673]">
+            <h1 class="text-3xl sm:text-4xl font-extrabold text-[#003673]">高频有效输入：平价实现流利表达</h1>
+            <p class="text-md sm:text-lg text-gray-700 mt-4 max-w-2xl mx-auto">
+                Mola Mola English 致力于连接优质菲律宾老师与中国学生，通过高性价比的一对一课程，搭配绘本+动画的趣味教学法，确保孩子能保持高频率的语言接触，实现从兴趣启蒙到B1+ 级别的扎实进阶。
+            </p>
+            <span class="inline-block mt-4 text-sm font-semibold text-[#730000] border-b-2 border-[#730000]">您的流利英语，从这里开始螺旋上升。</span>
+        </div>
+
+        <!-- 课程图 Title -->
+        <div class="text-center mb-6 mt-12">
+            <h2 class="text-3xl font-extrabold text-[#9B59B6]">螺旋式进阶体系总览</h2>
             <p class="text-lg text-gray-500 mt-2">（知识点随着级别上升，广度和深度不断螺旋式拓展）</p>
         </div>
 
@@ -254,22 +349,64 @@
             <!-- Dynamic Level Rings will be inserted here by JavaScript -->
         </div>
 
-        <!-- Gemini LLM Output Section -->
+        <!-- LLM Output Section (Analysis Report) -->
         <div id="llm-output" class="llm-output mt-12 bg-gray-50">
             <h3 class="text-center text-gray-500">点击上方的任一级别 (例如：启蒙级)，获取该级别专业的深度分析和进阶建议。</h3>
         </div>
         <!-- End LLM Output Section -->
 
+        <!-- 底部核心理念 -->
         <div class="mt-8 pt-4 border-t-2 border-gray-100">
             <h2 class="text-2xl font-bold text-[#333333] mb-3">体系核心理念：</h2>
             <ul class="list-disc list-inside space-y-2 text-gray-700 ml-4">
-                <li>**高频复现 (Frequency):** 重要的词汇和语法点在不同级别中反复出现，但每次都增加难度和应用场景。</li>
-                <li>**广度拓展 (Breadth):** 启蒙阶段侧重**发音与听力**，中级阶段拓展至**思辨与文化**。</li>
-                <li>**难度递增 (Depth):** 从**理解**简单绘本，到**策略性阅读**复杂章节书，能力螺旋式上升。</li>
+                <li>高频复现 (Frequency): 重要的词汇和语法点在不同级别中反复出现，但每次都增加难度和应用场景。</li>
+                <li>广度拓展 (Breadth): 启蒙阶段侧重发音与听力，中级阶段拓展至思辨与文化。</li>
+                <li>难度递增 (Depth): 从理解简单绘本，到策略性阅读复杂章节书，能力螺旋式上升。</li>
             </ul>
+        </div>
+    </div>
+
+    <!-- 1. Custom Message/Alert Box (for WeChat Copy Confirmation) -->
+    <div id="message-box" class="modal-backdrop" style="display: none;">
+        <div class="bg-white p-6 rounded-xl shadow-2xl max-w-sm w-full transform transition-all duration-300 scale-100 border-4 border-[#9B59B6] text-center">
+            <p id="message-text" class="text-gray-700 text-lg mb-4 font-medium"></p>
+            <button onclick="document.getElementById('message-box').style.display='none';" class="px-6 py-2 bg-[#9B59B6] text-white rounded-lg hover:bg-[#7a4690] font-bold">
+                好的，去添加
+            </button>
+        </div>
+    </div>
+
+    <!-- 2. Teacher Modal (for 师资力量) -->
+    <div id="teacher-modal" class="modal-backdrop" style="display: none;">
+        <div class="bg-white p-8 rounded-xl shadow-2xl max-w-xl w-full transform transition-all duration-300 scale-100">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h2 class="text-3xl font-extrabold text-[#003673]">✨ Mola Mola 师资力量</h2>
+                <button onclick="closeTeacherModal()" class="text-gray-500 hover:text-gray-800 text-2xl font-bold">&times;</button>
+            </div>
+            
+            <div class="text-gray-700 space-y-4">
+                <p class="font-bold text-lg text-[#9B59B6]">高性价比、高专业度：菲律宾优质教育人才</p>
+                <p>
+                    我们的外教团队均来自菲律宾，我们深知家长对口音和教学经验的顾虑。因此，Mola Mola 的老师均经过严格的四轮筛选**：
+                </p>
+                <ul class="list-disc list-inside space-y-2 ml-4">
+                    <li>**TESOL/TEFL 认证： 保证每位老师都具备专业的英语教学证书。</li>
+                    <li>K-12 教学经验： 优先聘用拥有多年儿童或青少年线上教学经验的老师。</li>
+                    <li>中性口音筛选： 我们的评估流程重点筛选口音清晰、语速适中、易于中国学生理解的老师。</li>
+                    <li>TPR 互动培训： 所有老师都经过专门的在线 TPR 互动教学法培训，确保课堂充满活力和高参与度。</li>
+                </ul>
+                <p class="mt-4 text-sm italic">
+                    — 我们致力于用合理的价格，提供欧美外教同等的专业热情和教学效果。
+                </p>
+            </div>
+
+            <div class="mt-6 text-right">
+                <button onclick="closeTeacherModal()" class="px-6 py-2 bg-[#E6F0FF] text-[#003673] rounded-lg hover:bg-[#D4E0F0] font-bold border-2 border-[#003673]">
+                    关闭
+                </button>
+            </div>
         </div>
     </div>
 
 </body>
 </html>
-
